@@ -34,7 +34,7 @@ def get_closest_vector(text, index, nlp):
 
     # Nearest neighbour search to find the closest stored vector
     results = index.search(text_vector, 1)
-    return results[0] if len(results) else (None, None)
+    return results[0] if len(results) else (None, float("inf"))
 
 
 def get_response(text, index, session, nlp):
@@ -50,12 +50,12 @@ def get_response(text, index, session, nlp):
     math_response = process_as_math(text)
     if math_response:
         # The text can be handled as a mathematical evaluation
-        return math_response, 1
+        return math_response, 0
 
     # Find closest matching vector
     match_id, distance = get_closest_vector(text, index, nlp)
     if match_id is None:
-        return None, 0
+        return None, float("inf")
 
     # Get all response texts associated with this input
     matches = session.query(Response).filter(Response.ngt_id == match_id).all()
