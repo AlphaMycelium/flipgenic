@@ -1,12 +1,13 @@
 import nltk
 
-# Load sentence tokenizer
+
 nltk.download("punkt")
 sent_tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
 
 
 def capitalize(text):
-    """Reformat a piece of text to capitalize each sentence.
+    """
+    Reformat a piece of text to capitalize each sentence.
 
     Uses NLTK to ensure that capital letters are not added where they are not
     needed. Will not modify any current capitalization.

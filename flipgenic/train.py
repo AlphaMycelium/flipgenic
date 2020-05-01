@@ -1,11 +1,5 @@
-import logging
-
-from axyn.chatbot.ngtinit import reactions_index, statements_index
-from axyn.chatbot.vector import average_vector
-from axyn.models import Reaction, Statement
-
-# Set up logging
-logger = logging.getLogger(__name__)
+from flipgenic.vector import average_vector
+from flipgenic.db_models import Response
 
 
 def get_index_id(vector, index):
@@ -32,31 +26,17 @@ def get_index_id(vector, index):
         return ngt_id
 
 
-def train_statement(text, responding_to, session):
+def learn_response(responding_to, response, session, index, nlp):
     """
-    Train the given statement into the index.
+    Learn the given response.
 
-    :param text: Text to add.
+    :param response: Response to learn.
     :param responding_to: The text this statement was in response to.
     :param session: Database session to use for insertions.
+    :param index: NGT index to use for insertions.
     """
-    vector = average_vector(responding_to)
-    ngt_id = get_index_id(vector, statements_index)
+    vector = average_vector(responding_to, nlp)
+    ngt_id = get_index_id(vector, index)
 
-    session.add(Statement(ngt_id=ngt_id, text=text))
-    session.commit()
-
-
-def train_reaction(emoji, responding_to, session):
-    """
-    Train the given reaction into the index.
-
-    :param text: Reaction emoji to add.
-    :param responding_to: The text this reaction was added to.
-    :param session: Database session to use for insertions.
-    """
-    vector = average_vector(responding_to)
-    ngt_id = get_index_id(vector, reactions_index)
-
-    session.add(Reaction(ngt_id=ngt_id, emoji=emoji))
+    session.add(Response(ngt_id=ngt_id, response=response))
     session.commit()

@@ -1,7 +1,4 @@
-from axyn.chatbot.nlploader import nlp
-
-
-def average_vector(text):
+def average_vector(text, nlp):
     """
     Get the vector for the given text.
 
@@ -12,6 +9,7 @@ def average_vector(text):
     which includes everything.
 
     :param text: Text string to process.
+    :param nlp: Loaded SpaCy model for vectors.
     :returns: Average vector for the document.
     """
     doc = nlp(text, disable=["tagger", "parser", "ner"])

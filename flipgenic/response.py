@@ -1,16 +1,11 @@
-import logging
 import random
 from statistics import StatisticsError, mode
 
 from mathparse import mathparse
 
-from axyn.chatbot.caps import capitalize
-from axyn.chatbot.ngtinit import reactions_index, statements_index
-from axyn.chatbot.vector import average_vector
-from axyn.models import Reaction, Statement
-
-# Set up logging
-logger = logging.getLogger(__name__)
+from flipgenic.caps import capitalize
+from flipgenic.vector import average_vector
+from flipgenic.db_models import Response
 
 
 def process_as_math(text):
@@ -27,52 +22,31 @@ def process_as_math(text):
         return None
 
 
-def get_closest_vector(text, index):
+def get_closest_vector(text, index, nlp):
     """
     Get the closest matching response from the index.
 
     :param text: Text we are comparing against.
     :param index: NGT index to query from.
+    :param nlp: Loaded SpaCy model for vectors.
     :returns: Tuple of (id, distance).
     """
-    text_vector = average_vector(text)
+    text_vector = average_vector(text, nlp)
 
     # Nearest neighbour search to find the closest stored vector
     results = index.search(text_vector, 1)
-    if len(results) == 0:
-        # The index is empty!
-        return None, None
-
-    # Unpack the first and only result
-    match_id, distance = results[0]
-    logger.info("Selected s%i as closest match, at distance %.3f", match_id, distance)
-    return match_id, distance
+    return results[0] if len(results) else (None, None)
 
 
-def confidence(distance):
-    """
-    Convert the distance between two document vectors to a confidence.
-
-    :param distance: Euclidean distance.
-    :returns: Confidence value ranging from 0 (low similarity) to
-        1 (high similarity).
-    """
-    # 0.6 has no specific meaning, it was chosen to scale the results to a
-    # sensible value based on observations
-    # https://www.wolframalpha.com/input/?i=plot+1%2F%281%2B0.6d%29+from+0+to+5
-    return 1 / (1 + (0.6 * distance))
-
-
-def get_response(text, session):
+def get_response(text, index, session, nlp):
     """
     Generate a response to the given text.
 
-    The confidence of the returned response is based on the similarity of the
-    given text and the text it was originally in response to.
-
     :param text: Text to respond to.
+    :param index: NGT index to use for queries.
     :param session: Database session to use for queries.
-    :returns: Tuple of (response, confidence).
+    :param nlp: Loaded SpaCy model for vectors.
+    :returns: Tuple of (response, distance).
     """
     math_response = process_as_math(text)
     if math_response:
@@ -80,13 +54,13 @@ def get_response(text, session):
         return math_response, 1
 
     # Find closest matching vector
-    match_id, distance = get_closest_vector(text, statements_index)
+    match_id, distance = get_closest_vector(text, index, nlp)
     if match_id is None:
         return None, 0
 
     # Get all response texts associated with this input
-    matches = session.query(Statement).filter(Statement.ngt_id == match_id).all()
-    responses = [match.text.strip() for match in matches if len(match.text.strip()) > 0]
+    matches = session.query(Response).filter(Response.ngt_id == match_id).all()
+    responses = [match.response for match in matches]
 
     try:
         # Select most common response
@@ -95,34 +69,4 @@ def get_response(text, session):
         # Select a random response
         response = random.choice(responses)
 
-    return capitalize(response), confidence(distance)
-
-
-def get_reaction(text, session):
-    """
-    Generate a reaction emoji to the given text.
-
-    The confidence of the returned reaction is based on the similarity of the
-    given text and the text it was originally added to.
-
-    :param text: Text to react to.
-    :param session: Database session to use for queries.
-    :returns: Tuple of (emoji, confidence).
-    """
-    # Find closest matching vector
-    match_id, distance = get_closest_vector(text, reactions_index)
-    if match_id is None:
-        return None, 0
-
-    # Get all reactions associated with this input
-    matches = session.query(Reaction).filter(Reaction.ngt_id == match_id).all()
-    reactions = [match.emoji for match in matches]
-
-    try:
-        # Select most common response
-        reaction = mode(reactions)
-    except StatisticsError:
-        # Select a random response
-        reaction = random.choice(reactions)
-
-    return reaction, confidence(distance)
+    return capitalize(response), distance
