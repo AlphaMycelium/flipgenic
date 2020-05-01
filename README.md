@@ -1,4 +1,9 @@
-![Flipgenic: High-speed conversational dialogue engine](images/header.png)
+<p align="center">
+  <img
+    src="images/header.png"
+    alt="Flipgenic: High-speed conversational dialogue engine"
+  />
+</p>
 
 ## What is it?
 
