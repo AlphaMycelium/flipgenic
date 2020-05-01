@@ -40,7 +40,5 @@ setup(
         "spacy >=2,<3",
         "mathparse <1",
     ],
-    extras_require={
-        'docs': ['Sphinx >=3,<4']
-    }
+    extras_require={"docs": ["Sphinx >=3,<4"]},
 )
