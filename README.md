@@ -1,5 +1,8 @@
 ![Flipgenic: High-speed conversational dialogue engine](images/header.png)
 
+**For how to get started, see
+[ReadTheDocs](https://flipgenic.readthedocs.io/en/latest/quickstart.html).**
+
 ## How does it work?
 
 A Flipgenic chatbot learns how to respond based on messages it receives, or
