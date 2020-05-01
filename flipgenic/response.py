@@ -3,7 +3,6 @@ from statistics import StatisticsError, mode
 
 from mathparse import mathparse
 
-from flipgenic.caps import capitalize
 from flipgenic.db_models import Response
 from flipgenic.vector import average_vector
 
@@ -69,4 +68,4 @@ def get_response(text, index, session, nlp):
         # Select a random response
         response = random.choice(responses)
 
-    return capitalize(response), distance
+    return response, distance

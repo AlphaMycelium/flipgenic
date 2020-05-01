@@ -37,7 +37,6 @@ setup(
     install_requires=[
         "sqlalchemy >=1.3,<4",
         "ngt >=1,<2",
-        "nltk >=3.4,<4",
         "spacy >=2,<3",
         "mathparse <1",
     ],
