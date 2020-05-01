@@ -1,14 +1,22 @@
 Quickstart
 **********
 
-Firstly, install Flipgenic `from pypi <https://pypi.org/project/flipgenic/>`_.
+Setup
+=====
 
-Create an instance of ``Responder``. This class will handle connection
-to the database, and provides methods for learning and recalling
-responses::
+1. Install Flipgenic `from PyPI <https://pypi.org/project/flipgenic/>`_::
 
-  from flipgenic import Responder
-  responder = Responder('/path/to/storage/directory/')
+    python -m pip install flipgenic
+
+#. Download the spaCy model::
+
+    python -m spacy download en_core_web_md
+
+#. Create an instance of ``Responder``. This class will handle connection
+   to the database, and provides methods for learning and recalling responses::
+
+     from flipgenic import Responder
+     responder = Responder('/path/to/storage/directory/')
 
 Learn Responses
 ===============
