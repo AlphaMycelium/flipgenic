@@ -14,7 +14,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as readme:
 setup(
     name="flipgenic",
     version=__version__,
-    description="High-speed conversational dialogue engine for chatbots",
+    description="High-speed conversational dialogue engine",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Daniel Thwaites",
