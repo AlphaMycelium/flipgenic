@@ -1,6 +1,5 @@
 import nltk
 
-
 nltk.download("punkt")
 sent_tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
 

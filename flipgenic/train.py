@@ -1,5 +1,5 @@
-from flipgenic.vector import average_vector
 from flipgenic.db_models import Response
+from flipgenic.vector import average_vector
 
 
 def get_index_id(vector, index):

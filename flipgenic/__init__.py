@@ -1,8 +1,8 @@
 import os
 
 import ngtpy
-import sqlalchemy
 import spacy
+import sqlalchemy
 
 from flipgenic.db_models import Base
 from flipgenic.response import get_response
@@ -16,6 +16,7 @@ class Responder:
     :param db_path: Path to the database folder which will hold files
         related to this responder. Will be created if it doesn't exist.
     """
+
     def __init__(self, db_path):
         # Create the directory if it doesn't exist
         os.makedirs(db_path, exist_ok=True)
@@ -50,7 +51,7 @@ class Responder:
 
     def _load_ngt(self):
         """Create and open the NGT index."""
-        path = os.path.join(self.db_path, 'ngt')
+        path = os.path.join(self.db_path, "ngt")
         if not os.path.exists(path):
             ngtpy.create(path, dimension=300)  # Spacy word vectors are 300D
 
@@ -58,8 +59,8 @@ class Responder:
 
     def _load_db(self):
         """Create and open the SQLite responses database."""
-        path = os.path.join(self.db_path, 'responses.sqlite3')
-        engine = sqlalchemy.create_engine('sqlite:///' + path)
+        path = os.path.join(self.db_path, "responses.sqlite3")
+        engine = sqlalchemy.create_engine("sqlite:///" + path)
         Base.metadata.create_all(engine)  # Create tables
 
         return sqlalchemy.orm.sessionmaker(bind=engine)

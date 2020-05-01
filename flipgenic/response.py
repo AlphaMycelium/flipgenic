@@ -4,8 +4,8 @@ from statistics import StatisticsError, mode
 from mathparse import mathparse
 
 from flipgenic.caps import capitalize
-from flipgenic.vector import average_vector
 from flipgenic.db_models import Response
+from flipgenic.vector import average_vector
 
 
 def process_as_math(text):
