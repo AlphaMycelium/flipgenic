@@ -1,15 +1,21 @@
 ![Flipgenic: High-speed conversational dialogue engine](images/header.png)
 
-**For how to get started, see
-[ReadTheDocs](https://flipgenic.readthedocs.io/en/latest/quickstart.html).**
+## What is it?
+
+Flipgenic is a Python package which helps you in creating chatbots which
+respond using a database of known conversations. It learns how to talk based on
+messages it receives, or messages from a dataset which are pre-trained into it.
+
+## How do I use it?
+
+**See [ReadTheDocs](https://flipgenic.readthedocs.io/en/latest/quickstart.html).**
 
 ## How does it work?
 
-A Flipgenic chatbot learns how to respond based on messages it receives, or
-messages from a dataset which are pre-trained into it. Input messages (well,
-a 300-dimensional [vector representation](https://spacy.io/api/token#vector)
-of them) are stored along with any learned responses to that text. If someone
-inputs the first message again, it will find the stored response and re-use it.
+Input messages (well, a 300-dimensional
+[vector representation](https://spacy.io/api/token#vector) of them) are stored
+along with any learned responses to that text. If someone inputs the first
+message again, the stored response will be found and re-used.
 
 Input messages are converted to a 300-dimensional vector using
 [SpaCy](https://spacy.io/api/token#vector). Then, this vector is used to
