@@ -17,7 +17,35 @@ messages it receives, or messages from a dataset which are pre-trained into it.
 
 ## How do I use it?
 
-**See [ReadTheDocs](https://flipgenic.readthedocs.io/en/latest/quickstart.html).**
+Here is a very basic example:
+
+```python
+# python -m pip install flipgenic
+# python -m spacy download en_core_web_md
+
+from flipgenic import Responder
+
+# Create and connect to database
+# This can take a while to load the spaCy models
+responder = Responder('/path/to/data/folder/')
+
+# Initialize the database with a single response
+responder.learn_response('Hello', 'Hi!')
+
+response = None
+while True:
+    text = input('> ')
+
+    if response:
+        # Learn the input as a response to the previous output
+        responder.learn_response(response, text)
+
+    # Generate a response
+    response, distance = responder.get_response(text)
+    print(response, f'({distance})')
+```
+
+**For more, see [ReadTheDocs](https://flipgenic.readthedocs.io/en/latest/quickstart.html).**
 
 ## How does it work?
 
