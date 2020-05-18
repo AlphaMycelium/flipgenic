@@ -4,9 +4,9 @@ import ngtpy
 import spacy
 import sqlalchemy
 
-from flipgenic.db_models import Base
+from flipgenic.db_models import Base, Response
+from flipgenic.vector import average_vector
 from flipgenic.response import get_response
-from flipgenic.train import learn_response
 
 
 class Responder:
@@ -27,6 +27,8 @@ class Responder:
         self._db_session = self._load_db()
         self._nlp = self._load_nlp(model)
 
+        self._to_learn = list()
+
     def get_response(self, text):
         """
         Find the best response to the given input text.
@@ -39,16 +41,84 @@ class Responder:
         session.close()
         return response
 
-    def learn_response(self, responding_to, response):
+    def add_response(self, responding_to, response):
         """
-        Learn the given text as the response to an input.
+        Add a response to the batch, to be committed later.
+
+        responding_to is transformed into a vector now, but it is not
+        added to the index until you commit it.
 
         :param response: The response to be learned.
         :param responding_to: The text this is in response to.
         """
+        vector = average_vector(responding_to, self._nlp)
+        self._to_learn.append((vector, response))
+
+    def _get_ngt_id(self, vector):
+        """
+        Get the NGT id of the given vector.
+
+        This is performed first by searching ``self._unbuilt_ids`` for a match, and
+        then querying the index if none is found.
+
+        If there is still no match, then the vector will be inserted into the index,
+        however the index is not rebuilt. This means that the vector will not be found
+        if this method is called again. Therefore, we use a dictionary of unbuilt IDs
+        to avoid adding the same vector twice. The dictionary can be emptied once the
+        index has been updated.
+
+        :param vector: Vector to get the ID of.
+        """
+        # Convert the numpy array to bytes so we can use it as a dictionary key
+        vector_hash = vector.tobytes()
+        if vector_hash in self._unbuilt_ids:
+            # Vector is in unbuilt_ids, return it
+            return self._unbuilt_ids[vector_hash]
+
+        # Query the index for this vector
+        result = self._ngt.search(vector, 1)
+        if len(result) > 0 and result[0][1] == 0:
+            # This vector already exists, return its id
+            return result[0][0]
+        else:
+            # Add vector to the index
+            ngt_id = self._ngt.insert(vector)
+            self._unbuilt_ids[vector_hash] = ngt_id
+            return ngt_id
+
+    def commit_responses(self):
+        """
+        Ingest added responses into the database and index.
+        """
+        self._unbuilt_ids = dict()
         session = self._db_session()
-        learn_response(responding_to, response, session, self._ngt, self._nlp)
+
+        for vector, response in self._to_learn:
+            session.add(Response(
+                ngt_id=self._get_ngt_id(vector),
+                response=response
+            ))
+
+        self._ngt.build_index()
+        self._ngt.save()
+        session.commit()
         session.close()
+
+        del self._unbuilt_ids
+        self._to_learn = list()
+
+    def learn_response(self, responding_to, response):
+        """
+        Learn the given text as the response to an input.
+
+        This is a shortcut to calling add_response followed by commit_responses,
+        and therefore any other added responses will also be committed.
+
+        :param response: The response to be learned.
+        :param responding_to: The text this is in response to.
+        """
+        self.add_response(responding_to, response)
+        self.commit_responses()
 
     def _load_ngt(self):
         """Create and open the NGT index."""
