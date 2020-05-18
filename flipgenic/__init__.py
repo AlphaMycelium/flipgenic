@@ -15,18 +15,17 @@ class Responder:
 
     :param db_path: Path to the database folder which will hold files
         related to this responder. Will be created if it doesn't exist.
-    :param spacy_model: Name of the spaCy model to load. This must be
-        downloaded before use.
+    :param model: SpaCy model, or the name of one to be loaded.
     """
 
-    def __init__(self, db_path, model_name="en_core_web_md"):
+    def __init__(self, db_path, model="en_core_web_md"):
         # Create the directory if it doesn't exist
         os.makedirs(db_path, exist_ok=True)
         self.db_path = db_path
 
         self._ngt = self._load_ngt()
         self._db_session = self._load_db()
-        self._nlp = self._load_nlp(model_name)
+        self._nlp = self._load_nlp(model)
 
     def get_response(self, text):
         """
@@ -67,6 +66,8 @@ class Responder:
 
         return sqlalchemy.orm.sessionmaker(bind=engine)
 
-    def _load_nlp(self, model_name):
+    def _load_nlp(self, model):
         """Load the SpaCy model."""
-        return spacy.load(model_name, disable=["ner", "textcat"])
+        if type(model) == str:
+            return spacy.load(model, disable=["ner", "textcat"])
+        return model
