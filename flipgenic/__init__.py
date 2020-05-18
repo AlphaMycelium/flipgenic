@@ -5,8 +5,8 @@ import spacy
 import sqlalchemy
 
 from flipgenic.db_models import Base, Response
-from flipgenic.vector import average_vector
 from flipgenic.response import get_response
+from flipgenic.vector import average_vector
 
 
 class Responder:
@@ -94,10 +94,7 @@ class Responder:
         session = self._db_session()
 
         for vector, response in self._to_learn:
-            session.add(Response(
-                ngt_id=self._get_ngt_id(vector),
-                response=response
-            ))
+            session.add(Response(ngt_id=self._get_ngt_id(vector), response=response))
 
         self._ngt.build_index()
         self._ngt.save()
