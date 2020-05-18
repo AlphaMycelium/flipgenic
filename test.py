@@ -1,6 +1,9 @@
+"""Manual testing script"""
+
+
 from flipgenic import Responder
 
-responder = Responder("/home/danth/flipgenic_test")
+responder = Responder("/tmp/flipgenic_test")
 
 response = None
 while True:
