@@ -27,10 +27,10 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     keywords="conversation dialogue engine chat chatbot",
-    url="https://github.com/AlphaMycelium/flipgenic",
+    url="https://github.com/danth/flipgenic",
     project_urls={
-        "Bug Reports": "https://github.com/AlphaMycelium/flipgenic/issues",
-        "Source": "https://github.com/AlphaMycelium/flipgenic",
+        "Bug Reports": "https://github.com/danth/flipgenic/issues",
+        "Source": "https://github.com/danth/flipgenic",
     },
     packages=find_packages(exclude=["docs", "tests"]),
     python_requires=">=3.6,<4",

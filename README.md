@@ -7,8 +7,6 @@
 
 ---
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/07fceb32b49fc9aa5efe/maintainability)](https://codeclimate.com/github/AlphaMycelium/flipgenic/maintainability)
-
 ## What is it?
 
 Flipgenic is a Python package which helps you in creating chatbots which
