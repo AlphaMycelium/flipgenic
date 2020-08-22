@@ -45,7 +45,7 @@ jobs:
     name: Semantic Release
     runs-on: ubuntu-latest
     needs: [beautify]
-    if: github.repository == 'AlphaMycelium/flipgenic'
+    if: github.repository == 'danth/flipgenic'
 
     steps:
     - uses: actions/checkout@v2
